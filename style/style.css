@@ -2,9 +2,21 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    align-items: center;
+}
+
+
+
+.container_pokemon {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 1rem;
+    width: 300px;
+    margin-top: 10%;
 }
 
 h1 {
@@ -16,14 +28,14 @@ input {
     margin: 0.5rem 0;
 }
 
-button {
+/*button {
     padding: 0.5rem;
     margin: 0.5rem 0;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
-}
+}*/
 
 #pokemon {
     display: flex;
@@ -40,4 +52,13 @@ img {
 
 p {
     margin: 0.5rem 0;
+}
+
+.current button{
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
