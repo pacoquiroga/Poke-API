@@ -11,7 +11,6 @@ let count = 32;
 let perPage = 40;
 
 
-
 const prev = () => {
     if (prevUrl) {
         clearContainer();
@@ -82,10 +81,6 @@ const loadCard = (data) => {
                 <span class="pokemon-number">${newOrder}</span>
             </div>
         </div>
-
-
-
-
     `;
     card.innerHTML = content;
     container.appendChild(card);
@@ -125,64 +120,58 @@ const clearNavigation = () => navigation.innerHTML = "";
 getPokemons(`${POKE_URL}?offset=0&limit=40'`);
 
 
-// Obtener elementos del DOM
-const searchButton = document.getElementById('search-button');
-const modal = document.getElementById('pokemon-modal');
-const closeButton = document.querySelector('.close');
-
-// Función para mostrar el modal
-function openModal() {
-    modal.style.display = 'block';
-}
-
-// Función para ocultar el modal
-function closeModal() {
-    modal.style.display = 'none';
-}
-
-// Event listener para el botón de búsqueda
-searchButton.addEventListener('click', function() {
+//MODAL POKEMON
+document.getElementById('search-button').addEventListener('click', () => {
     const search = document.getElementById('search').value;
     fetch(`https://pokeapi.co/api/v2/pokemon/${search}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            const pokemon = document.getElementById('pokemon');
-            pokemon.innerHTML = `
-                <h2>${data.name}</h2>
-                <img src="${data.sprites.front_default}" alt="${data.name}">
-                <p>Altura: ${data.height}</p>
-                <p>Peso: ${data.weight}</p>
-                
+            const pokemonContent = document.getElementById('pokemon-content');
+            pokemonContent.innerHTML = `
+
                 <div class="custom-container">
-            <div class="image-container">
-                <img src="${newImage}" alt="${name}">
-            </div>
-            <div class="text-container">
-                <span class="pokemon-name">${name}</span>
-                <span class="pokemon-number">${newOrder}</span>
-            </div>
-        </div>
+                    <div class="image-container">
+                        <img src="${data.sprites.front_default}" alt="${data.name}">
+                    </div>
+                    <div class="text-container">
+                        <span class="pokemon-name">${data.name}</span>
+                        <span class="pokemon-number">Altura: ${data.height}</span>
+                        <span class="pokemon-number">Peso: ${data.weight}</span>
+                    </div>
+                </div>
             `;
+
+            // Mostrar el modal
+            const modal = document.getElementById('pokemon-modal');
+            modal.style.display = 'block';
+
+            // Cerrar el modal cuando se hace clic en la 'x' (close)
+            const closeBtn = document.getElementsByClassName('close')[0];
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+
+            // Cerrar el modal cuando se hace clic fuera del contenido
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
         })
         .catch(error => {
-            console.error(error);
+            console.error('Error fetching data:', error);
+            alert('No se encontró el Pokémon.');
         });
-    openModal();
-});
-
-// Event listener para el botón de cerrar dentro del modal
-closeButton.addEventListener('click', function() {
-    closeModal();
-});
-
-// Event listener para cerrar el modal haciendo clic fuera de él
-window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-        closeModal();
-    }
 });
 
 
+
+//FIN MODAL
 
 
 
