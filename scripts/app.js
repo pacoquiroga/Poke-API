@@ -11,6 +11,7 @@ let count = 32;
 let perPage = 40;
 
 
+
 const prev = () => {
     if (prevUrl) {
         clearContainer();
@@ -34,8 +35,8 @@ const next = () => {
 
 const getPokemons = (url) => {
     let params = new URLSearchParams(url.split('?')[1]);
-    console.log(params.get ('offset'));
-    Page = params.get ('offset') / perPage;
+    console.log(params.get('offset'));
+    Page = params.get('offset') / perPage;
 
     fetch(url)
         .then(response => response.json())
@@ -66,15 +67,25 @@ const loadCard = (data) => {
     const imagen = data.sprites.front_default;
     const newImage = imagen ? imagen : "./img/image_404.png";
     const name = data.name;
-    const order = data.order;
+    const order = data.id;
     const newOrder = (order != -1) ? order : "#";
 
 
     let card = document.createElement("div");
     let content = `
-        <img src="${newImage}" alt="${name}">
-        <p>${name}</p>
-        <p>${newOrder}</p>
+        <div class="custom-container">
+            <div class="image-container">
+                <img src="${newImage}" alt="${name}">
+            </div>
+            <div class="text-container">
+                <span class="pokemon-name">${name}</span>
+                <span class="pokemon-number">${newOrder}</span>
+            </div>
+        </div>
+
+
+
+
     `;
     card.innerHTML = content;
     container.appendChild(card);
@@ -112,3 +123,100 @@ const clearContainer = () => container.innerHTML = "";
 const clearNavigation = () => navigation.innerHTML = "";
 
 getPokemons(`${POKE_URL}?offset=0&limit=40'`);
+
+
+// Obtener elementos del DOM
+const searchButton = document.getElementById('search-button');
+const modal = document.getElementById('pokemon-modal');
+const closeButton = document.querySelector('.close');
+
+// Función para mostrar el modal
+function openModal() {
+    modal.style.display = 'block';
+}
+
+// Función para ocultar el modal
+function closeModal() {
+    modal.style.display = 'none';
+}
+
+// Event listener para el botón de búsqueda
+searchButton.addEventListener('click', function() {
+    const search = document.getElementById('search').value;
+    fetch(`https://pokeapi.co/api/v2/pokemon/${search}`)
+        .then(response => response.json())
+        .then(data => {
+            const pokemon = document.getElementById('pokemon');
+            pokemon.innerHTML = `
+                <h2>${data.name}</h2>
+                <img src="${data.sprites.front_default}" alt="${data.name}">
+                <p>Altura: ${data.height}</p>
+                <p>Peso: ${data.weight}</p>
+                
+                <div class="custom-container">
+            <div class="image-container">
+                <img src="${newImage}" alt="${name}">
+            </div>
+            <div class="text-container">
+                <span class="pokemon-name">${name}</span>
+                <span class="pokemon-number">${newOrder}</span>
+            </div>
+        </div>
+            `;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    openModal();
+});
+
+// Event listener para el botón de cerrar dentro del modal
+closeButton.addEventListener('click', function() {
+    closeModal();
+});
+
+// Event listener para cerrar el modal haciendo clic fuera de él
+window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+        closeModal();
+    }
+});
+
+
+
+
+
+const filterByType = (type) => {
+    fetch(`https://pokeapi.co/api/v2/type/${type}`)
+        .then(response => response.json())
+        .then(data => {
+            clearContainer();
+            showPokemons(data.pokemon.map(p => p.pokemon));
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+const getTypes = () => {
+    fetch('https://pokeapi.co/api/v2/type')
+        .then(response => response.json())
+        .then(data => {
+            mostrarTiposSelect(data.results);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+const mostrarTiposSelect = (types) => {
+    const typeSelect = document.getElementById('type-select');
+    types.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type.name;
+        option.textContent = type.name;
+        typeSelect.appendChild(option);
+    });
+}
+
+

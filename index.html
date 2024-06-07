@@ -1,41 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="stylesheet" href="./style/style.css">
+    <link href="style/output.css" rel="stylesheet">
 
     <title>Pokemon</title>
 </head>
+
 <body>
     <header>
-        <h1>PokeApi</h1>
+        <img src="./img/pokeapi_logo.png" alt="PokeAPI">
         <section class="navigation">
-            <button onClick="prev()"><<</button>
+            <button onClick="prev()"><< </button>
             <section class="numbers"></section>
             <button onClick="next()">>></button>
         </section>
+        <section class="filtros">
+            <input type="text" id="search" placeholder="Buscar pokemon">
+            <select id="typ-select"></select>
+            <button id="search-button">Buscar</button>
+            
+            <select id="type-select"></select>
+            
+        </section>
     </header>
-    <section>
+
+    <div id="pokemon-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="pokemon" class="modal-body"></div> <!-- Deja este div vacío -->
+        </div>
+    </div>
+    
+    <section class="full-screen">
         <section class="container">
             <section class="pokemons" id="pokemons">
             </section>
         </section>
     </section>
 
+
+    
+
+
     <script src="./scripts/app.js"></script>
 
-
-    <!--<section class="container">
-        <h1>Pokemon</h1>
-        <input type="text" id="search" placeholder="Buscar pokemon">
-        <button id="search-button">Buscar</button>
-        <div id="pokemon"></div>
-        <script src="./scripts/app.js"></script>
-    </section>-->
-
-
 </body>
+
 </html>
