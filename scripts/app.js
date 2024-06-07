@@ -10,12 +10,37 @@ let prevUrl = "";
 let count = 32;
 let perPage = 40;
 
+const typeSelect = document.getElementById("type-select");
+typeSelect.addEventListener("change", () => {
+  clearContainer();
+  const typeUrl = typeSelect.value;
+  console.log(typeUrl);
+  if (typeUrl === "all") {
+    getPokemons(`${POKE_URL}?offset=0&limit=40`);
+    document.querySelector(".navigation").style.display = "";
+  } else {
+    getPokemonsType(typeUrl);
+    document.querySelector(".navigation").style.display = "none";
+  }
+}); 
+
+const getPokemonsType = (url) => {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            pokemons = data.pokemon;
+            console.log(pokemons);
+            showPokemons(pokemons);
+        })
+
+}
 
 
 const prev = () => {
     if (prevUrl) {
         clearContainer();
-        getPokemons(prevUrl);
+        const typeUrl = document.getElementById("type-select").value;
+        getPokemons(prevUrl + (typeUrl !== "all" ? `&type=${typeUrl}` : ""));
     }
     else {
         alert("No hay más pokemones");
@@ -25,7 +50,8 @@ const prev = () => {
 const next = () => {
     if (nextUrl) {
         clearContainer();
-        getPokemons(nextUrl);
+        const typeUrl = document.getElementById("type-select").value;
+        getPokemons(nextUrl + (typeUrl !== "all" ? `&type=${typeUrl}` : ""));
     }
     else {
         alert("No hay más pokemones");
@@ -48,19 +74,47 @@ const getPokemons = (url) => {
             currentPage = Math.floor(data.offset / perPage);
             console.log(currentPage);
             addNumbers();
+            const getPokemons = (url) => {
+              let params = new URLSearchParams(url.split("?")[1]);
+              console.log(params.get("offset"));
+              Page = params.get("offset") / perPage;
+
+              fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                  nextUrl = data.next;
+                  prevUrl = data.previous;
+                  count = data.count;
+                  currentPage = Math.floor(data.offset / perPage);
+                  console.log(currentPage);
+                  addNumbers();
+                });
+            };
             showPokemons(data.results);
         })
 }
 
 const showPokemons = (array) => {
-    array.map(item => {
-        fetch(item.url)
-            .then(response => response.json())
-            .then(data => {
+    if(typeSelect.value === "all") {
+        array.map(item => {
+            fetch(item.url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    loadCard(data);
+                })
+        })
+    } else {
+        array.map(pokemon => {
+            fetch(pokemon.pokemon.url)
+              .then((response) => response.json())
+              .then((data) => {
                 console.log(data);
                 loadCard(data);
-            })
-    })
+              });
+        })
+    }
 }
 
 const loadCard = (data) => {
@@ -182,41 +236,23 @@ window.addEventListener('click', function(event) {
     }
 });
 
-
-
-
-
-const filterByType = (type) => {
-    fetch(`https://pokeapi.co/api/v2/type/${type}`)
-        .then(response => response.json())
-        .then(data => {
-            clearContainer();
-            showPokemons(data.pokemon.map(p => p.pokemon));
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
+/**
+ * FILTRO DE POKEMONES
+ */
 
 const getTypes = () => {
-    fetch('https://pokeapi.co/api/v2/type')
-        .then(response => response.json())
-        .then(data => {
-            mostrarTiposSelect(data.results);
-        })
-        .catch(error => {
-            console.error(error);
+    fetch("https://pokeapi.co/api/v2/type")
+      .then((response) => response.json())
+      .then((data) => {
+        const typeSelect = document.getElementById("type-select");
+        data.results.forEach((type) => {
+          const option = document.createElement("option");
+          option.value = type.url;
+          option.text = type.name;
+          typeSelect.appendChild(option);
         });
+      });
 }
 
-const mostrarTiposSelect = (types) => {
-    const typeSelect = document.getElementById('type-select');
-    types.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type.name;
-        option.textContent = type.name;
-        typeSelect.appendChild(option);
-    });
-}
-
+getTypes();
 
